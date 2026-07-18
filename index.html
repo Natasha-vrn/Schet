@@ -1,3 +1,6 @@
+
+Index · HTML
+Syntax highlighting has been disabled due to code size.
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -40,28 +43,21 @@
     --border:#243352; --shadow:0 10px 30px rgba(0,0,0,.5);
   }
   *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+  html{background:var(--bg);}
   body{
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Arial,sans-serif;
     background:linear-gradient(160deg,var(--bg) 0%,var(--bg2) 100%);
-    color:var(--text); min-height:100vh; display:flex; flex-direction:column; align-items:center;
-    transition:background 1.2s ease, color .6s ease;
+    background-attachment:fixed;
+    color:var(--text); min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; align-items:center;
+    transition:background-color .6s ease, color .6s ease;
   }
-  .theme-demo{
-    margin:14px auto 0; display:flex; gap:4px; background:var(--card); border:1px solid var(--border);
-    border-radius:999px; padding:4px; box-shadow:var(--shadow); z-index:50;
-  }
-  .theme-demo button{
-    border:none; background:transparent; color:var(--muted); font-size:12px; padding:6px 12px;
-    border-radius:999px; cursor:pointer; font-family:inherit; transition:all .3s;
-  }
-  .theme-demo button.on{background:var(--accent); color:#fff;}
   .frame{
     width:100%; max-width:430px; flex:1; display:flex; flex-direction:column;
     padding:18px 20px 34px; position:relative;
   }
-  .screen{display:none; flex-direction:column; flex:1; animation:fade .35s ease;}
-  .screen.active{display:flex;}
-  @keyframes fade{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;}}
+  .screen{display:none; flex-direction:column; flex:1;}
+  .screen.active{display:flex; animation:fade .28s ease;}
+  @keyframes fade{from{opacity:0;} to{opacity:1;}}
 
   .logo{display:flex; align-items:center; gap:10px; margin:26px 0 6px;}
   .logo-mark{
@@ -267,13 +263,6 @@
 </head>
 <body data-theme="day">
 
-<div class="theme-demo" id="themeDemo">
-  <button data-t="morning">Утро</button>
-  <button data-t="day" class="on">День</button>
-  <button data-t="evening">Вечер</button>
-  <button data-t="night">Ночь</button>
-</div>
-
 <div class="frame">
 
   <!-- ВХОД -->
@@ -399,12 +388,13 @@
 
   <!-- ВЫБОР ОРГАНИЗАЦИИ -->
   <section class="screen" id="scr-org">
-    <h2 style="margin-top:20px">Организация</h2>
-    <p class="sub">Выберите, от имени какой организации работать</p>
-    <div class="searchbar">
-      <svg class="ic-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-      <input type="text" id="orgSearch" placeholder="Название или ИНН" oninput="renderOrgs()">
+    <div class="topbar" style="margin-top:20px">
+      <div class="t" style="font-size:24px;font-weight:700">Организация</div>
+      <button class="back" onclick="logout()" title="Выйти">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      </button>
     </div>
+    <p class="sub">Выберите, от имени какой организации работать</p>
     <div class="card" id="orgList"></div>
   </section>
 
@@ -413,6 +403,9 @@
     <div class="topbar">
       <div class="t" id="homeGreet">Добрый день!</div>
       <div class="org-chip" id="homeOrg" onclick="show('scr-org')" style="cursor:pointer"></div>
+      <button class="back" onclick="logout()" title="Выйти">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      </button>
     </div>
     <div class="actions">
       <button class="act" onclick="newInvoice()">
@@ -593,10 +586,10 @@
     </div>
     <div class="notice">
       <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round"><path d="M21 8l-9 6-9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>
-      <span>Контрагенту будет отправлен <b>PDF готового счёта</b> с печатью и подписью.</span>
+      <span>Сформируется <b>PDF счёта</b> с печатью и подписью. Откроется окно «Поделиться» — выберите Почту (или мессенджер), чтобы отправить файл.</span>
     </div>
     <div class="spacer"></div>
-    <button class="btn btn-primary mtl" onclick="sendToContr()">
+    <button class="btn btn-primary mtl" id="sendBtn" onclick="sendToContr()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
       Отправить контрагенту
     </button>
@@ -852,10 +845,9 @@ function autoTheme(){
 }
 function setTheme(t){
   document.body.dataset.theme=t;
-  document.querySelectorAll('#themeDemo button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
 }
-document.querySelectorAll('#themeDemo button').forEach(b=>b.onclick=()=>setTheme(b.dataset.t));
 setTheme(autoTheme());
+setInterval(()=>setTheme(autoTheme()), 5*60*1000);
 
 /* ---------- Навигация ---------- */
 function show(id){
@@ -880,15 +872,20 @@ function doLogin(){
   if(mine.length===1){pickOrg(mine[0].id);}else{show('scr-org');}
 }
 function renderOrgs(){
-  const q=document.getElementById('orgSearch').value;
-  const list=ORGS.filter(o=>o.login===state.login).filter(o=>match(q,o.name,o.inn));
+  const list=ORGS.filter(o=>o.login===state.login);
   document.getElementById('orgList').innerHTML=list.length?list.map(o=>`
     <div class="list-item" onclick="pickOrg(${o.id})">
       <div class="li-avatar">${o.name.replace(/^(ООО|АО|ИП)\s*«?/,'').slice(0,2).toUpperCase()}</div>
       <div class="li-body"><div class="li-title">${o.name}</div>
       <div class="li-sub">ИНН ${o.inn} · НДС ${o.vat}% · выгрузка: ${o.channel}</div></div>
       <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
-    </div>`).join(''):'<div class="empty">Ничего не найдено</div>';
+    </div>`).join(''):'<div class="empty">Организации не найдены</div>';
+}
+function logout(){
+  state.login=null; state.org=null;
+  document.getElementById('pass').value='';
+  show('scr-login');
+  toast('Вы вышли из аккаунта');
 }
 function pickOrg(id){
   state.org=ORGS.find(o=>o.id===id);
@@ -927,8 +924,14 @@ function openDoc(i){
   act.querySelector('span').textContent=pay?'Отправить в бухгалтерию повторно':'Отправить контрагенту повторно';
   act.onclick=pay?resendPP:resendDoc;
   const fb=document.getElementById('viewFileBtn');
-  fb.querySelector('span').textContent=pay?'Файл для банка':'Excel для 1С';
-  fb.onclick=pay?()=>downloadBankTxt(viewDoc.pp):()=>downloadInvoiceXlsx(viewDoc);
+  fb.parentElement.style.gridTemplateColumns=pay?'1fr 1fr':'1fr';
+  if(pay){
+    fb.style.display='';
+    fb.querySelector('span').textContent='Файл для банка';
+    fb.onclick=()=>downloadBankTxt(viewDoc.pp);
+  }else{
+    fb.style.display='none';
+  }
   show('scr-view');
 }
 
@@ -1068,8 +1071,7 @@ function saveInvoice(){
   DOCS.unshift(state.doc);
   state.org.lastNo=state.no;
   saveDB();
-  downloadInvoiceXlsx(state.doc);
-  toast(`Счёт № ${state.no} сохранён.<br>Excel-файл для 1С скачан — канал в бухгалтерию: ${state.org.channel}`,4200);
+  toast(`Счёт № ${state.no} сохранён и передан в «Магистраль Финанс» (${state.org.channel}).`,4200);
   document.getElementById('sendContrName').textContent=state.contr.abbr?state.contr.abbr+' — '+state.contr.name:state.contr.name;
   document.getElementById('sendSumInfo').textContent=`Счёт № ${state.no} от ${today()} на ${fmt(total)} ₽`;
   document.getElementById('sendEmail').value=state.contr.email||'';
@@ -1087,17 +1089,71 @@ function resendDoc(){
   document.getElementById('saveEmail').checked=false;
   show('scr-send');
 }
-function sendToContr(){
+/* Подгрузка библиотек для PDF (по требованию) */
+function loadLib(src,ready){
+  return new Promise((res,rej)=>{
+    if(ready())return res();
+    const s=document.createElement('script'); s.src=src;
+    s.onload=()=>res(); s.onerror=()=>rej(new Error('load '+src));
+    document.head.appendChild(s);
+  });
+}
+async function buildInvoicePdfBlob(d){
+  await loadLib('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',()=>window.html2canvas);
+  await loadLib('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',()=>window.jspdf);
+  const wrap=document.createElement('div');
+  wrap.className='invoice';
+  wrap.style.cssText='position:fixed;left:-10000px;top:0;width:760px;box-shadow:none;border-radius:0;';
+  wrap.innerHTML=renderInvoiceHTML(d);
+  document.body.appendChild(wrap);
+  try{
+    const canvas=await window.html2canvas(wrap,{scale:2,backgroundColor:'#ffffff'});
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF('p','mm','a4');
+    const margin=8, iw=210-margin*2, ih=canvas.height*iw/canvas.width;
+    pdf.addImage(canvas.toDataURL('image/jpeg',0.94),'JPEG',margin,margin,iw,ih);
+    return pdf.output('blob');
+  } finally { wrap.remove(); }
+}
+function openMail(em,d){
+  const subj=encodeURIComponent(`Счёт № ${d.no} от ${d.date}`);
+  const body=encodeURIComponent(`Здравствуйте!\n\nВо вложении счёт № ${d.no} от ${d.date} на сумму ${fmt(docSum(d))} ₽.\n\nС уважением,\n${d.org.name}`);
+  location.href=`mailto:${em}?subject=${subj}&body=${body}`;
+}
+async function sendToContr(){
   const em=document.getElementById('sendEmail').value.trim();
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){toast('Укажите корректный email контрагента');return;}
   if(!state.contr.email&&document.getElementById('saveEmail').checked){state.contr.email=em;saveDB();}
-  finish(true,em);
+  const d=state.doc, btn=document.getElementById('sendBtn');
+  if(btn){btn.disabled=true;}
+  toast('Готовим PDF счёта…');
+  let blob;
+  try{ blob=await buildInvoicePdfBlob(d); }
+  catch(e){
+    if(btn){btn.disabled=false;}
+    toast('Не удалось сформировать PDF — для этого нужен интернет. Счёт сохранён, отправить можно позже.',4500);
+    return;
+  }
+  if(btn){btn.disabled=false;}
+  const fname=`Schet_${d.no}.pdf`;
+  const file=new File([blob],fname,{type:'application/pdf'});
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    try{
+      await navigator.share({files:[file],title:`Счёт № ${d.no}`,text:`Счёт № ${d.no} от ${d.date}`});
+      finish(true,em);
+    }catch(e){
+      if(e && e.name==='AbortError')return;   // пользователь закрыл окно «Поделиться»
+      downloadBlob(blob,fname); openMail(em,d); finish(true,em);
+    }
+  } else {
+    downloadBlob(blob,fname); openMail(em,d); finish(true,em);
+  }
 }
 function finish(sent,em){
   if(sent&&state.doc){state.doc.sentEmail=em;saveDB();}
   document.getElementById('doneText').innerHTML=
     `Счёт № ${state.no} сохранён, данные переданы в «Магистраль Финанс» (${state.org.channel}).`+
-    (sent?`<br><br>PDF счёта отправлен контрагенту на <b>${em}</b>.`:'<br><br>Отправка контрагенту пропущена — счёт можно отправить позже.');
+    (sent?`<br><br>PDF счёта подготовлен для отправки на <b>${em}</b>.`:'<br><br>Отправка контрагенту пропущена — счёт можно отправить позже.');
   show('scr-done');
 }
 
